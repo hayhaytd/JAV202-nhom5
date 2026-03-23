@@ -1,36 +1,84 @@
 package dao;
 
 import entity.User;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import utils.XJDBC;
-
-import java.sql.ResultSet;
 
 public class UserDAO {
 
-    public User login(String email, String password) {
-        String sql = "SELECT * FROM [User] WHERE email=? AND password=? AND active=1";
+    String INSERT_SQL = "INSERT INTO [User](fullname,email,password,phone,role,active) VALUES(?,?,?,?,?,?)";
+    String UPDATE_SQL = "UPDATE [User] SET fullname=?, email=?, password=?, phone=?, role=?, active=? WHERE id=?";
+    String DELETE_SQL = "DELETE FROM [User] WHERE id=?";
+    String SELECT_ALL_SQL = "SELECT * FROM [User]";
+    String SELECT_BY_ID_SQL = "SELECT * FROM [User] WHERE id=?";
+
+    // INSERT (id tự tăng nên không insert id)
+    public void insert(User entity) {
+        XJDBC.update(INSERT_SQL,
+                entity.getFullname(),
+                entity.getEmail(),
+                entity.getPassword(),
+                entity.getPhone(),
+                entity.getRole(),
+                entity.isActive()
+        );
+    }
+
+    // UPDATE
+    public void update(User entity) {
+        XJDBC.update(UPDATE_SQL,
+                entity.getFullname(),
+                entity.getEmail(),
+                entity.getPassword(),
+                entity.getPhone(),
+                entity.getRole(),
+                entity.isActive(),
+                entity.getId()
+        );
+    }
+
+    // DELETE
+    public void delete(int id) {
+        XJDBC.update(DELETE_SQL, id);
+    }
+
+    // SELECT ALL
+    public List<User> selectAll() {
+        return selectBySql(SELECT_ALL_SQL);
+    }
+
+    // SELECT BY ID
+    public User selectById(int id) {
+        List<User> list = selectBySql(SELECT_BY_ID_SQL, id);
+        return list.size() > 0 ? list.get(0) : null;
+    }
+
+    // SELECT BY SQL
+    protected List<User> selectBySql(String sql, Object... args) {
+        List<User> list = new ArrayList<>();
 
         try {
-            ResultSet rs = XJDBC.query(sql, email, password);
+            ResultSet rs = XJDBC.query(sql, args);
+            while (rs.next()) {
+                User entity = new User();
+                entity.setId(rs.getInt("id"));
+                entity.setFullname(rs.getString("fullname"));
+                entity.setEmail(rs.getString("email"));
+                entity.setPassword(rs.getString("password"));
+                entity.setPhone(rs.getString("phone"));
+                entity.setRole(rs.getInt("role"));
+                entity.setActive(rs.getBoolean("active"));
 
-            if (rs.next()) {
-                return new User(
-                        rs.getInt("id"),
-                        rs.getString("fullname"),
-                        rs.getString("email"),
-                        rs.getString("password"),
-                        rs.getString("phone"),
-                        rs.getInt("role"),
-                        rs.getBoolean("active")
-                );
+                list.add(entity);
             }
-
+            
             rs.getStatement().getConnection().close();
 
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
-
-        return null;
+        return list;
     }
 }
