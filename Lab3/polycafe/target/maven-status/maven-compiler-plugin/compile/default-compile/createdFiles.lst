@@ -1,0 +1,12 @@
+entity\Category.class
+entity\User.class
+dao\BillDetailDAO.class
+entity\Drink.class
+entity\BillDetail.class
+utils\XJDBC.class
+dao\BillDAO.class
+test\MainTest.class
+dao\UserDAO.class
+dao\CategoryDAO.class
+entity\Bill.class
+dao\DrinkDAO.class
