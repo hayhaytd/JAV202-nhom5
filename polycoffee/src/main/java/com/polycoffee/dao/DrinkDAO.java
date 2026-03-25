@@ -1,0 +1,46 @@
+package com.polycoffee.dao;
+
+import com.polycoffee.entity.Drink;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
+
+import java.util.List;
+
+public class DrinkDAO extends CrudDAO<Drink, Integer> {
+
+    @Override
+    protected Class<Drink> getEntityClass() {
+        return Drink.class;
+    }
+
+    public List<Drink> findAll() {
+        EntityManager em = getEntityManager();
+        try {
+            List<Drink> list = em.createQuery(
+                    "SELECT d FROM Drink d", Drink.class).getResultList();
+
+            System.out.println("👉 DAO size = " + list.size()); // DEBUG
+
+            return list;
+        } finally {
+            em.close();
+        }
+    }
+
+    public List<Drink> findByCategory(Integer categoryId) {
+        if (categoryId == null) {
+            return findAll();
+        }
+
+        EntityManager em = getEntityManager();
+        try {
+            TypedQuery<Drink> query = em.createQuery(
+                    "SELECT d FROM Drink d JOIN FETCH d.category WHERE d.category.id = :cid",
+                    Drink.class);
+            query.setParameter("cid", categoryId);
+            return query.getResultList();
+        } finally {
+            em.close();
+        }
+    }
+}
