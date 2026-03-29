@@ -41,20 +41,7 @@
 <!-- NAVBAR -->
 <div class="navbar">
 
-    <a href="menu?action=home"
-       class="${param.action=='home' || empty param.action ? 'active' : ''}">
-        Home
-    </a>
-
-    <a href="menu?action=drink"
-       class="${param.action=='drink' ? 'active' : ''}">
-        Drink
-    </a>
-
-    <a href="menu?action=login"
-       class="${param.action=='login' ? 'active' : ''}">
-        Login
-    </a>
+    <jsp:include page ="/views/menu.jsp">
 
 </div>
 

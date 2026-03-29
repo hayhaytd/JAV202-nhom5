@@ -1,6 +1,7 @@
 package com.polycoffee.servlet;
 
-import com.polycoffee.dao.UserDAO;
+import com.polycoffee.dao.*;
+import com.polycoffee.entity.Drink;
 import com.polycoffee.entity.User;
 
 import jakarta.servlet.ServletException;
@@ -8,11 +9,19 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 
 import java.io.IOException;
+import java.util.List;
 
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
 
     private UserDAO userDAO = new UserDAO();
+    private DrinkDAO drinkDAO;
+
+    @Override
+    public void init() throws ServletException {
+        userDAO = new UserDAO();
+        drinkDAO = new DrinkDAO();
+    }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -22,55 +31,61 @@ public class LoginServlet extends HttpServlet {
         request.getRequestDispatcher("/index.jsp").forward(request, response);
     }
 
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
-        String email = request.getParameter("email");
-        String password = request.getParameter("password");
+        String action = req.getParameter("action");
 
-        try {
-            User user = userDAO.findByEmail(email);
+        if ("login".equals(action)) {
 
-            if (user != null && user.getPassword().equals(password)) {
+            String email = req.getParameter("email");
+            String password = req.getParameter("password");
 
-                // check active
-                if (!user.getActive()) {
-                    request.setAttribute("error", "Tài khoản đã bị khóa!");
-                    request.setAttribute("view", "/views/login.jsp");
-                    request.getRequestDispatcher("/views/index.jsp").forward(request, response);
-                    return;
-                }
+            try {
+                User user = userDAO.findByEmail(email);
 
-                // lưu session
-                HttpSession session = request.getSession();
-                session.setAttribute("user", user);
+                if (user != null && user.getPassword().equals(password)) {
 
-                // phân quyền
-                int role = user.getRole();
+                    if (!user.getActive()) {
+                        req.setAttribute("error", "Tài khoản đã bị khóa!");
+                        req.setAttribute("view", "/views/login.jsp");
+                        req.getRequestDispatcher("/views/index.jsp").forward(req, resp);
+                        return;
+                    }
 
-                if (role == 0) {
-                    request.setAttribute("view", "/views/homeAdmin.jsp");
+                    // lưu session
+                    HttpSession session = req.getSession();
+                    session.setAttribute("user", user);
 
-                } else if (role == 1) {
-                    request.setAttribute("view", "/views/homeEmployee.jsp");
+                    int role = user.getRole();
+
+                    // 👉 load drink nếu cần
+                    List<Drink> list = drinkDAO.findAll();
+                    req.setAttribute("drinks", list);
+                    System.out.println("👉 Input email: " + email);
+                    System.out.println("👉 User found: " + (user != null));
+                    if (role == 0) {
+                        req.setAttribute("view", "/views/homeAdmin.jsp");
+
+                    } else if (role == 1) {
+                        req.setAttribute("view", "/views/homeEmployee.jsp");
+
+                    } else {
+                        req.setAttribute("view", "/views/homeGuest.jsp");
+                    }
 
                 } else {
-                    request.setAttribute("view", "/views/homeGuest.jsp");
+                    req.setAttribute("error", "Sai email hoặc mật khẩu!");
+                    req.setAttribute("view", "/views/login.jsp");
                 }
 
-                request.getRequestDispatcher("/views/index.jsp").forward(request, response);
-
-            } else {
-                request.setAttribute("error", "Sai email hoặc mật khẩu!");
-                request.setAttribute("view", "/views/login.jsp");
-                request.getRequestDispatcher("/views/index.jsp").forward(request, response);
+            } catch (Exception e) {
+                e.printStackTrace();
+                req.setAttribute("error", "Tài khoản không tồn tại!");
+                req.setAttribute("view", "/views/login.jsp");
             }
-
-        } catch (Exception e) {
-            request.setAttribute("error", "Tài khoản không tồn tại!");
-            request.setAttribute("view", "/views/login.jsp");
-            request.getRequestDispatcher("/views/index.jsp").forward(request, response);
         }
+
+        req.getRequestDispatcher("/views/index.jsp").forward(req, resp);
     }
 }
