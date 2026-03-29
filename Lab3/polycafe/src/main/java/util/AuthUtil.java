@@ -1,6 +1,7 @@
 package utils;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import entity.User;
 
 public class AuthUtil {
@@ -19,10 +20,11 @@ public class AuthUtil {
 
     public static boolean isManager(HttpServletRequest request) {
         User user = getUser(request);
-        return user != null && user.getRole() == 1; // 1 = manager
+        return user != null && user.getRole() == 1; // 1 = admin
     }
 
     public static void clear(HttpServletRequest request) {
-        request.getSession().removeAttribute("user");
+        HttpSession session = request.getSession();
+        session.removeAttribute("user");
     }
 }
