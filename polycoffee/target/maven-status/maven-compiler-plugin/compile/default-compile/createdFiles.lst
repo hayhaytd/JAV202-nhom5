@@ -10,6 +10,7 @@ com\polycoffee\entity\User.class
 com\polycoffee\entity\Bill.class
 com\polycoffee\dao\CrudDAO.class
 com\polycoffee\dao\BillDetailDAO.class
+com\polycoffee\filter\AuthFilter.class
 com\polycoffee\test\TestSQLConnection.class
 com\polycoffee\utils\JPAUtil.class
 com\polycoffee\entity\Drink.class

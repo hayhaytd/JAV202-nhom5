@@ -1,5 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
-    <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
         <c:choose>
 
@@ -13,7 +13,7 @@
                         <th>Mô tả</th>
                         <th>Danh mục</th>
                     </tr>
-
+Q
                     <c:forEach var="d" items="${drinks}">
                         <tr>
                             <td>${d.id}</td>
