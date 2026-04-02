@@ -19,26 +19,27 @@ public class AuthFilter implements Filter {
     @Override
     public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain)
             throws IOException, ServletException {
+
         HttpServletRequest request = (HttpServletRequest) req;
         HttpServletResponse response = (HttpServletResponse) resp;
 
         String uri = request.getRequestURI();
 
+        // Cho phép truy cập tự do
         if (uri.contains("login") || uri.contains("css") || uri.contains("js")) {
             chain.doFilter(request, response);
             return;
         }
+
         HttpSession session = request.getSession();
 
+        // Nếu chưa login → redirect và DỪNG
         if (!AuthUtil.isLogin(session)) {
-            response.sendRedirect("Login.jsp");
+            response.sendRedirect(request.getContextPath() + "/views/login.jsp");
+            return; //  BẮT BUỘC
         }
-        // // Ví dụ chặn admin
-        // if (uri.contains("admin") && !AuthUtil.isAdmin(session)) {
-        //     response.sendRedirect("403.jsp");
-        //     return;
-        // }
 
-        chain.doFilter(req, resp);
+        // Nếu qua được hết → cho đi tiếp
+        chain.doFilter(request, response);
     }
 }
