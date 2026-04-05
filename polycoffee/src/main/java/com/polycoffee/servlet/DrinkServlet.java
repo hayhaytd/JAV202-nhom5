@@ -39,6 +39,7 @@ public class DrinkServlet extends HttpServlet {
         }
 
         // Forward sang JSP
-        request.getRequestDispatcher("/views/drink.jsp").forward(request, response);
+        request.setAttribute("view", "/views/drink.jsp");
+        request.getRequestDispatcher("/views/index.jsp").forward(request, response);
     }
 }

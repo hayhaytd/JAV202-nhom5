@@ -31,10 +31,11 @@ public class AuthFilter implements Filter {
         }
         HttpSession session = request.getSession();
 
-        if (!AuthUtil.isLogin(session)) {
-            response.sendRedirect("Login.jsp");
-        }
-        // // Ví dụ chặn admin
+        // if (!AuthUtil.isLogin(session)) {
+        //     response.sendRedirect("/login");
+        //     return;
+        // }
+        // Ví dụ chặn admin
         // if (uri.contains("admin") && !AuthUtil.isAdmin(session)) {
         //     response.sendRedirect("403.jsp");
         //     return;

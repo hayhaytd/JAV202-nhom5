@@ -6,7 +6,7 @@
         <!-- lỗi -->
         <p style="color:red;">${error}</p>
 
-        <form action="menu" method="post">
+        <form action="login" method="post">
             <input type="hidden" name="action" value="login">
 
             <input type="text" name="email" placeholder="Email" required style="width:100%;margin:10px 0;padding:8px;">

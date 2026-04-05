@@ -3,6 +3,7 @@ package com.polycoffee.servlet;
 import com.polycoffee.dao.*;
 import com.polycoffee.entity.Drink;
 import com.polycoffee.entity.User;
+import com.polycoffee.utils.AuthUtil;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -28,64 +29,30 @@ public class LoginServlet extends HttpServlet {
             throws ServletException, IOException {
 
         request.setAttribute("view", "/views/login.jsp");
-        request.getRequestDispatcher("/index.jsp").forward(request, response);
+        request.getRequestDispatcher("/views/index.jsp").forward(request, response);
     }
 
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String email = req.getParameter("email");
+        String password = req.getParameter("password");
+        UserDAO udao = new UserDAO();
+        User user = udao.Login(email, password);
 
-        String action = req.getParameter("action");
+        if (user != null) {
+            AuthUtil.login(req.getSession(), user);
+            int role = user.getRole();
 
-        if ("login".equals(action)) {
-
-            String email = req.getParameter("email");
-            String password = req.getParameter("password");
-
-            try {
-                User user = userDAO.findByEmail(email);
-
-                if (user != null && user.getPassword().equals(password)) {
-
-                    if (!user.getActive()) {
-                        req.setAttribute("error", "Tài khoản đã bị khóa!");
-                        req.setAttribute("view", "/views/login.jsp");
-                        req.getRequestDispatcher("/views/index.jsp").forward(req, resp);
-                        return;
-                    }
-
-                    // lưu session
-                    HttpSession session = req.getSession();
-                    session.setAttribute("user", user);
-
-                    int role = user.getRole();
-
-                    // 👉 load drink nếu cần
-                    List<Drink> list = drinkDAO.findAll();
-                    req.setAttribute("drinks", list);
-                    System.out.println("👉 Input email: " + email);
-                    System.out.println("👉 User found: " + (user != null));
-                    if (role == 0) {
-                        req.setAttribute("view", "/views/homeAdmin.jsp");
-
-                    } else if (role == 1) {
-                        req.setAttribute("view", "/views/homeEmployee.jsp");
-
-                    } else {
-                        req.setAttribute("view", "/views/homeGuest.jsp");
-                    }
-
-                } else {
-                    req.setAttribute("error", "Sai email hoặc mật khẩu!");
-                    req.setAttribute("view", "/views/login.jsp");
-                }
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                req.setAttribute("error", "Tài khoản không tồn tại!");
-                req.setAttribute("view", "/views/login.jsp");
+            if (role == 0 || role == 1) {
+                req.setAttribute("view", "/views/homeManager.jsp");
+            } else if(role == 2){
+                req.setAttribute("view", "/views/home.jsp");
             }
+        } else {
+            req.setAttribute("error", "sai email hoặc mật khẩu!");
+            req.setAttribute("view", "/views/login.jsp");
         }
-
+        // req.setAttribute("view", "/views/login.jsp");
         req.getRequestDispatcher("/views/index.jsp").forward(req, resp);
     }
 }

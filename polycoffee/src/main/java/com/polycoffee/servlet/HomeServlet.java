@@ -10,7 +10,8 @@ import jakarta.servlet.http.*;
 public class HomeServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        req.setAttribute("view", "/views/homeGuest.jsp");
+        req.setAttribute("view", "/views/home.jsp");
         req.getRequestDispatcher("/views/index.jsp").forward(req, resp);
     }
+    
 }

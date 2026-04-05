@@ -41,7 +41,7 @@
 <!-- NAVBAR -->
 <div class="navbar">
 
-    <jsp:include page ="/views/menu.jsp">
+    <jsp:include page ="/views/menu.jsp"/>
 
 </div>
 
