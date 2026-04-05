@@ -19,8 +19,8 @@ public class ForgotPasswordServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-
-        req.getRequestDispatcher("/views/forgot.jsp").forward(req, resp);
+        req.setAttribute("view", "/views/forgot.jsp");
+        req.getRequestDispatcher("/views/index.jsp").forward(req, resp);
     }
 
     @Override
@@ -46,8 +46,7 @@ public class ForgotPasswordServlet extends HttpServlet {
                         "dinhdhtts01689@gmail.com",
                         email,
                         "Reset Password",
-                        "Mật khẩu mới của bạn là: " + newPass
-                );
+                        "Mật khẩu mới của bạn là: " + newPass);
 
                 if (result < 0) {
                     req.setAttribute("message", "Gửi mail thất bại!");
@@ -60,7 +59,7 @@ public class ForgotPasswordServlet extends HttpServlet {
             e.printStackTrace();
             req.setAttribute("message", "Lỗi hệ thống!");
         }
-
-        req.getRequestDispatcher("/views/forgot.jsp").forward(req, resp);
+        req.setAttribute("view", "/views/forgot.jsp");
+        req.getRequestDispatcher("/views/index.jsp").forward(req, resp);
     }
 }

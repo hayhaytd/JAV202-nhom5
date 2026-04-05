@@ -18,4 +18,5 @@
                 Đăng nhập
             </button>
         </form>
+        <a href="forgot-password">Forget password</a>
     </div>
