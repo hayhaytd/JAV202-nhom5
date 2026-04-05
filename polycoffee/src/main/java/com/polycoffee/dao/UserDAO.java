@@ -1,9 +1,6 @@
 package com.polycoffee.dao;
 
-<<<<<<< HEAD
-=======
 import java.util.List;
->>>>>>> 0246108772daa96ea05e7d6346a833d098d538d0
 
 import com.polycoffee.entity.User;
 import com.polycoffee.utils.JPAUtil;
@@ -18,6 +15,7 @@ public class UserDAO extends CrudDAO<User, Integer> {
         return User.class;
     }
 
+    // ================= FIND BY EMAIL =================
     public User findByEmail(String email) {
         EntityManager em = getEntityManager();
         try {
@@ -32,18 +30,25 @@ public class UserDAO extends CrudDAO<User, Integer> {
         }
     }
 
-<<<<<<< HEAD
+    // ================= LOGIN =================
     public User Login(String email, String password) {
         EntityManager em = JPAUtil.getEntityManager();
         try {
             String jpql = "SELECT u FROM User u WHERE u.email = :e AND u.password = :p";
-            return em.createQuery(jpql, User.class).setParameter("e", email).setParameter("p", password)
+
+            return em.createQuery(jpql, User.class)
+                    .setParameter("e", email)
+                    .setParameter("p", password)
                     .getSingleResult();
+
         } catch (Exception e) {
-            // TODO: handle exception
             return null;
-=======
-    //  SEARCH + PAGINATION
+        } finally {
+            em.close();
+        }
+    }
+
+    // ================= SEARCH + PAGINATION =================
     public List<User> search(String fullname, String email, Boolean active, int page, int size) {
         EntityManager em = getEntityManager();
         try {
@@ -73,7 +78,8 @@ public class UserDAO extends CrudDAO<User, Integer> {
                 query.setParameter("active", active);
             }
 
-            query.setFirstResult(page * size);
+            // FIX pagination
+            query.setFirstResult((page - 1) * size);
             query.setMaxResults(size);
 
             return query.getResultList();
@@ -83,7 +89,7 @@ public class UserDAO extends CrudDAO<User, Integer> {
         }
     }
 
-    //  COUNT
+    // ================= COUNT =================
     public Long count(String fullname, String email, Boolean active) {
         EntityManager em = getEntityManager();
         try {
@@ -115,7 +121,12 @@ public class UserDAO extends CrudDAO<User, Integer> {
 
         } finally {
             em.close();
->>>>>>> 0246108772daa96ea05e7d6346a833d098d538d0
         }
+    }
+
+    // ================= TOTAL PAGE =================
+    public int getTotalPage(String fullname, String email, Boolean active, int size) {
+        long total = count(fullname, email, active);
+        return (int) Math.ceil((double) total / size);
     }
 }

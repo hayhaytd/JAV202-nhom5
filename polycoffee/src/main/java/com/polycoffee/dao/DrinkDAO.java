@@ -13,19 +13,98 @@ public class DrinkDAO extends CrudDAO<Drink, Integer> {
         return Drink.class;
     }
 
+    // ================= FIND ALL =================
     public List<Drink> findAll() {
         EntityManager em = getEntityManager();
         try {
-            List<Drink> list = em.createQuery(
-                    "SELECT d FROM Drink d", Drink.class).getResultList();
-
-            System.out.println("👉 DAO size = " + list.size());
-            return list;
+            return em.createQuery("SELECT d FROM Drink d", Drink.class)
+                    .getResultList();
         } finally {
             em.close();
         }
     }
 
+    // ================= FIND BY ID =================
+    public Drink findById(Integer id) {
+        EntityManager em = getEntityManager();
+        try {
+            return em.find(Drink.class, id);
+        } finally {
+            em.close();
+        }
+    }
+
+    // ================= CREATE =================
+    public void create(Drink entity) {
+        EntityManager em = getEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.persist(entity);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            em.getTransaction().rollback();
+            throw e;
+        } finally {
+            em.close();
+        }
+    }
+
+    // ================= UPDATE =================
+    public void update(Drink entity) {
+        EntityManager em = getEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.merge(entity);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            em.getTransaction().rollback();
+            throw e;
+        } finally {
+            em.close();
+        }
+    }
+
+    // ================= DELETE =================
+    public void delete(Integer id) {
+        EntityManager em = getEntityManager();
+        try {
+            em.getTransaction().begin();
+
+            Drink entity = em.find(Drink.class, id);
+            if (entity != null) {
+                em.remove(entity);
+            }
+
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            em.getTransaction().rollback();
+            throw e;
+        } finally {
+            em.close();
+        }
+    }
+
+    // ================= SOFT DELETE (OPTIONAL) =================
+    public void deleteSoft(Integer id) {
+        EntityManager em = getEntityManager();
+        try {
+            em.getTransaction().begin();
+
+            Drink d = em.find(Drink.class, id);
+            if (d != null) {
+                d.setActive(false);
+            }
+
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            em.getTransaction().rollback();
+            throw e;
+        } finally {
+            em.close();
+        }
+    }
+
+    // ================= FIND BY CATEGORY =================
     public List<Drink> findByCategory(Integer categoryId) {
         if (categoryId == null) {
             return findAll();
@@ -43,7 +122,7 @@ public class DrinkDAO extends CrudDAO<Drink, Integer> {
         }
     }
 
-    // ================= SEARCH =================
+    // ================= SEARCH + PAGINATION =================
     public List<Drink> search(String name, Integer categoryId, Boolean active, int page, int size) {
         EntityManager em = getEntityManager();
         try {
@@ -59,6 +138,8 @@ public class DrinkDAO extends CrudDAO<Drink, Integer> {
                 jpql += " AND d.active = :active";
             }
 
+            jpql += " ORDER BY d.id ASC";
+
             TypedQuery<Drink> query = em.createQuery(jpql, Drink.class);
 
             if (name != null && !name.isEmpty()) {
@@ -71,7 +152,8 @@ public class DrinkDAO extends CrudDAO<Drink, Integer> {
                 query.setParameter("active", active);
             }
 
-            query.setFirstResult(page * size);
+            // FIX pagination chuẩn
+            query.setFirstResult((page - 1) * size);
             query.setMaxResults(size);
 
             return query.getResultList();
@@ -81,7 +163,7 @@ public class DrinkDAO extends CrudDAO<Drink, Integer> {
     }
 
     // ================= COUNT =================
-    public Long count(String name, Integer categoryId, Boolean active) {
+    public long count(String name, Integer categoryId, Boolean active) {
         EntityManager em = getEntityManager();
         try {
             String jpql = "SELECT COUNT(d) FROM Drink d WHERE 1=1";
@@ -112,5 +194,11 @@ public class DrinkDAO extends CrudDAO<Drink, Integer> {
         } finally {
             em.close();
         }
+    }
+
+    // ================= TOTAL PAGE =================
+    public int getTotalPage(String name, Integer categoryId, Boolean active, int size) {
+        long total = count(name, categoryId, active);
+        return (int) Math.ceil((double) total / size);
     }
 }

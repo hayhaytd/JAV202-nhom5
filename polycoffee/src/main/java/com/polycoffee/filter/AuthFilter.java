@@ -33,7 +33,6 @@ public class AuthFilter implements Filter {
 
         HttpSession session = request.getSession();
 
-<<<<<<< HEAD
         // if (!AuthUtil.isLogin(session)) {
         //     response.sendRedirect("/login");
         //     return;
@@ -43,13 +42,11 @@ public class AuthFilter implements Filter {
         //     response.sendRedirect("403.jsp");
         //     return;
         // }
-=======
         // Nếu chưa login → redirect và DỪNG
-        if (!AuthUtil.isLogin(session)) {
-            response.sendRedirect(request.getContextPath() + "/views/login.jsp");
-            return; //  BẮT BUỘC
-        }
->>>>>>> 0246108772daa96ea05e7d6346a833d098d538d0
+        // if (!AuthUtil.isLogin(session)) {
+        //     response.sendRedirect(request.getContextPath() + "/views/login.jsp");
+        //     return; //  BẮT BUỘC
+        // }
 
         // Nếu qua được hết → cho đi tiếp
         chain.doFilter(request, response);
