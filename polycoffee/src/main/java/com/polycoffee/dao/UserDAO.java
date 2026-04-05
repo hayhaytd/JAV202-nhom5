@@ -15,6 +15,16 @@ public class UserDAO extends CrudDAO<User, Integer> {
         return User.class;
     }
 
+    // ================= FIND BY ID =================
+    public User findById(Integer id) {
+        EntityManager em = getEntityManager();
+        try {
+            return em.find(User.class, id);
+        } finally {
+            em.close();
+        }
+    }
+
     // ================= FIND BY EMAIL =================
     public User findByEmail(String email) {
         EntityManager em = getEntityManager();
@@ -31,7 +41,7 @@ public class UserDAO extends CrudDAO<User, Integer> {
     }
 
     // ================= LOGIN =================
-    public User Login(String email, String password) {
+    public User login(String email, String password) {
         EntityManager em = JPAUtil.getEntityManager();
         try {
             String jpql = "SELECT u FROM User u WHERE u.email = :e AND u.password = :p";
@@ -43,6 +53,73 @@ public class UserDAO extends CrudDAO<User, Integer> {
 
         } catch (Exception e) {
             return null;
+        } finally {
+            em.close();
+        }
+    }
+
+    // ================= CREATE =================
+    public void create(User user) {
+        EntityManager em = getEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.persist(user);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            em.getTransaction().rollback();
+            throw e;
+        } finally {
+            em.close();
+        }
+    }
+
+    // ================= UPDATE =================
+    public void update(User user) {
+        EntityManager em = getEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.merge(user);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            em.getTransaction().rollback();
+            throw e;
+        } finally {
+            em.close();
+        }
+    }
+
+    // ================= DELETE =================
+    public void delete(Integer id) {
+        EntityManager em = getEntityManager();
+        try {
+            em.getTransaction().begin();
+
+            User u = em.find(User.class, id);
+            if (u != null) {
+                em.remove(u);
+            }
+
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            em.getTransaction().rollback();
+            throw e;
+        } finally {
+            em.close();
+        }
+    }
+
+    // ================= SOFT DELETE =================
+    public void deleteSoft(Integer id) {
+        EntityManager em = getEntityManager();
+        try {
+            em.getTransaction().begin();
+
+            User u = em.find(User.class, id);
+            if (u != null) {
+                u.setActive(false);
+            }
+
+            em.getTransaction().commit();
         } finally {
             em.close();
         }
@@ -64,7 +141,7 @@ public class UserDAO extends CrudDAO<User, Integer> {
                 jpql += " AND u.active = :active";
             }
 
-            jpql += " ORDER BY u.id DESC";
+            jpql += " ORDER BY u.id ASC"; // dễ nhìn hơn
 
             TypedQuery<User> query = em.createQuery(jpql, User.class);
 
@@ -78,7 +155,6 @@ public class UserDAO extends CrudDAO<User, Integer> {
                 query.setParameter("active", active);
             }
 
-            // FIX pagination
             query.setFirstResult((page - 1) * size);
             query.setMaxResults(size);
 
@@ -128,5 +204,29 @@ public class UserDAO extends CrudDAO<User, Integer> {
     public int getTotalPage(String fullname, String email, Boolean active, int size) {
         long total = count(fullname, email, active);
         return (int) Math.ceil((double) total / size);
+    }
+
+    // ================= EMPLOYEE =================
+    public List<User> findEmployees() {
+        EntityManager em = getEntityManager();
+        try {
+            return em.createQuery(
+                    "SELECT u FROM User u WHERE u.role = 1", User.class)
+                    .getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
+    // ================= GUEST =================
+    public List<User> findGuests() {
+        EntityManager em = getEntityManager();
+        try {
+            return em.createQuery(
+                    "SELECT u FROM User u WHERE u.role = 2", User.class)
+                    .getResultList();
+        } finally {
+            em.close();
+        }
     }
 }

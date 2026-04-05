@@ -37,10 +37,11 @@ public class LoginServlet extends HttpServlet {
         String email = req.getParameter("email");
         String password = req.getParameter("password");
         UserDAO udao = new UserDAO();
-        User user = udao.Login(email, password);
+        User user = udao.login(email, password);
 
         if (user != null) {
             AuthUtil.login(req.getSession(), user);
+            
             int role = user.getRole();
 
             if (role == 0 || role == 1) {
@@ -52,6 +53,7 @@ public class LoginServlet extends HttpServlet {
             req.setAttribute("error", "sai email hoặc mật khẩu!");
             req.setAttribute("view", "/views/login.jsp");
         }
+        
         // req.setAttribute("view", "/views/login.jsp");
         req.getRequestDispatcher("/views/index.jsp").forward(req, resp);
     }
