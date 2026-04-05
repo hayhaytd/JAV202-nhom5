@@ -8,6 +8,7 @@ com\polycoffee\filter\Utf8Filter.class
 com\polycoffee\utils\ParamUtil.class
 com\polycoffee\entity\User.class
 com\polycoffee\entity\Bill.class
+com\polycoffee\servlet\UserServlet.class
 com\polycoffee\dao\CrudDAO.class
 com\polycoffee\dao\BillDetailDAO.class
 com\polycoffee\filter\AuthFilter.class

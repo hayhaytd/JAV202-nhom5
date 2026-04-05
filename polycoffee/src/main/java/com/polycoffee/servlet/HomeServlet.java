@@ -3,7 +3,6 @@ package com.polycoffee.servlet;
 import java.io.IOException;
 
 import jakarta.servlet.*;
-import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 
 // @WebServlet("/home")
