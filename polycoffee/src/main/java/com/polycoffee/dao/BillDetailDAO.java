@@ -13,11 +13,16 @@ public class BillDetailDAO extends CrudDAO<BillDetail, Integer> {
         return BillDetail.class;
     }
 
+    // ================= FIND BY BILL =================
     public List<BillDetail> findByBill(Integer billId) {
         EntityManager em = getEntityManager();
-        TypedQuery<BillDetail> query = em.createQuery(
-                "SELECT bd FROM BillDetail bd WHERE bd.bill.id = :bid", BillDetail.class);
-        query.setParameter("bid", billId);
-        return query.getResultList();
+        try {
+            TypedQuery<BillDetail> query = em.createQuery(
+                    "SELECT bd FROM BillDetail bd WHERE bd.bill.id = :bid", BillDetail.class);
+            query.setParameter("bid", billId);
+            return query.getResultList();
+        } finally {
+            em.close();
+        }
     }
 }
