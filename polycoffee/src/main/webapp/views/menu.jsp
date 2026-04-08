@@ -16,13 +16,14 @@
                     <a href="drink" style="color: #fff; text-decoration: none;">Đồ uống</a>
                 </li>
 
-                <c:if test="${sessionScope.uesr != null && sessionScope.user.getRole() == 0}">
-                    <li style="margin-right: 20px;">
+                <c:if test="${sessionScope.uesr != null && sessionScope.user.role == 0}">
+                    
+                </c:if>
+                <li style="margin-right: 20px;">
                         <a href="employee" style="color: #fff; text-decoration: none;">
                             Quản lý nhân viên
                         </a>
                     </li>
-                </c:if>
                 <li style="margin-left: 20px;">
                     <a href="login" style="color: #fff; text-decoration: none;">Dăng nhập</a>
                 </li>
