@@ -53,7 +53,7 @@
             <jsp:include page="${view}" />
         </c:when>
         <c:otherwise>
-            <jsp:include page="/views/homeGuest.jsp" />
+            <jsp:include page="/views/home.jsp" />
         </c:otherwise>
     </c:choose>
 

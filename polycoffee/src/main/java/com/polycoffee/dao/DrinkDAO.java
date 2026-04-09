@@ -3,7 +3,11 @@ package com.polycoffee.dao;
 import com.polycoffee.entity.Drink;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
+import jakarta.persistence.Query;
 
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class DrinkDAO extends CrudDAO<Drink, Integer> {
@@ -200,5 +204,38 @@ public class DrinkDAO extends CrudDAO<Drink, Integer> {
     public int getTotalPage(String name, Integer categoryId, Boolean active, int size) {
         long total = count(name, categoryId, active);
         return (int) Math.ceil((double) total / size);
+    }
+
+    // ================= TOP 5 DRINK (JPA) =================
+    public List<Object[]> getTop5Drinks(Date from, Date to) {
+        EntityManager em = getEntityManager();
+
+        try {
+            String jpql = """
+                        SELECT d.id, d.name, SUM(bd.quantity)
+                        FROM BillDetail bd
+                        JOIN bd.drink d
+                        JOIN bd.bill b
+                        WHERE b.created_at BETWEEN :from AND :to
+                          AND d.active = true
+                          AND b.status = 1
+                        GROUP BY d.id, d.name
+                        ORDER BY SUM(bd.quantity) DESC
+                    """;
+            ;
+            ;
+            ;
+
+            TypedQuery<Object[]> query = em.createQuery(jpql, Object[].class);
+
+            query.setParameter("from", from);
+            query.setParameter("to", to);
+            query.setMaxResults(5);
+
+            return query.getResultList();
+
+        } finally {
+            em.close();
+        }
     }
 }

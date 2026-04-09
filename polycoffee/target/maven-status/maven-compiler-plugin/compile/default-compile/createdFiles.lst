@@ -4,6 +4,7 @@ com\polycoffee\dao\CategoryDAO.class
 com\polycoffee\servlet\HomeServlet.class
 com\polycoffee\entity\User.class
 com\polycoffee\servlet\UserServlet.class
+com\polycoffee\servlet\BillServlet.class
 com\polycoffee\filter\AuthFilter.class
 com\polycoffee\test\TestSQLConnection.class
 com\polycoffee\mail\Mailer.class
@@ -12,9 +13,11 @@ com\polycoffee\mail\Mailer$1.class
 com\polycoffee\servlet\EmployeeServlet.class
 com\polycoffee\dao\DrinkDAO.class
 com\polycoffee\dao\UserDAO.class
+com\polycoffee\dao\RevenueDAO.class
 com\polycoffee\utils\FileUtil.class
 com\polycoffee\servlet\DrinkServlet.class
 com\polycoffee\entity\BillDetail.class
+com\polycoffee\servlet\RevenueServlet.class
 com\polycoffee\servlet\LoginServlet.class
 com\polycoffee\filter\Utf8Filter.class
 com\polycoffee\utils\ParamUtil.class
@@ -25,3 +28,4 @@ com\polycoffee\dao\BillDetailDAO.class
 com\polycoffee\utils\JPAUtil.class
 com\polycoffee\test\TestDatabase.class
 com\polycoffee\entity\Category.class
+com\polycoffee\servlet\Top5DrinkServlet.class

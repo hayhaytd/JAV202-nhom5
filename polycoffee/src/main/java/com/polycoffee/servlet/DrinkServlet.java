@@ -10,6 +10,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 @WebServlet("/drink")
@@ -29,36 +30,64 @@ public class DrinkServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+        // String action = request.getParameter("action");
+
+        // // ================= TOP 5 =================
+        // if ("top5".equals(action)) {
+        //     try {
+        //         String fromStr = request.getParameter("fromDate");
+        //         String toStr = request.getParameter("toDate");
+
+        //         if (fromStr != null && toStr != null) {
+        //             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
+        //             java.util.Date fromDate = sdf.parse(fromStr);
+        //             java.util.Date toDate = sdf.parse(toStr);
+
+        //             List<Object[]> topList = drinkDAO.getTop5Drinks(fromDate, toDate);
+        //             request.setAttribute("top5List", topList);
+        //         }
+
+        //     } catch (Exception e) {
+        //         e.printStackTrace();
+        //         request.setAttribute("error", "Lỗi thống kê Top 5!");
+        //     }
+
+        //     request.getRequestDispatcher("/views/top5drink.jsp")
+        //             .forward(request, response);
+        //     return; // ❗ rất quan trọng
+        // }
+
+        // ================= NORMAL DRINK =================
         try {
-            // ===== SEARCH PARAM =====
             String name = request.getParameter("name");
             String cidStr = request.getParameter("categoryId");
             String activeStr = request.getParameter("active");
             String pageStr = request.getParameter("page");
 
             Integer categoryId = (cidStr != null && !cidStr.isEmpty())
-                    ? Integer.parseInt(cidStr) : null;
+                    ? Integer.parseInt(cidStr)
+                    : null;
 
             Boolean active = (activeStr != null && !activeStr.isEmpty())
-                    ? Boolean.parseBoolean(activeStr) : null;
+                    ? Boolean.parseBoolean(activeStr)
+                    : null;
 
             int page = (pageStr != null && !pageStr.isEmpty())
-                    ? Integer.parseInt(pageStr) : 1;
+                    ? Integer.parseInt(pageStr)
+                    : 1;
 
             int size = 10;
 
-            // ===== DATA =====
             List<Drink> list = drinkDAO.search(name, categoryId, active, page, size);
             long total = drinkDAO.count(name, categoryId, active);
             int totalPages = (int) Math.ceil((double) total / size);
 
-            // ===== SET ATTRIBUTE =====
             request.setAttribute("drinks", list);
             request.setAttribute("categories", categoryDAO.findAll());
             request.setAttribute("currentPage", page);
             request.setAttribute("totalPages", totalPages);
 
-            // giữ lại input search
             request.setAttribute("name", name);
             request.setAttribute("categoryId", categoryId);
             request.setAttribute("active", active);
@@ -67,9 +96,9 @@ public class DrinkServlet extends HttpServlet {
             e.printStackTrace();
         }
 
-        // ===== FORWARD =====
         request.setAttribute("view", "/views/drink.jsp");
-        request.getRequestDispatcher("/views/index.jsp").forward(request, response);
+        request.getRequestDispatcher("/views/index.jsp")
+                .forward(request, response);
     }
 
     // ================= POST (CRUD) =================
