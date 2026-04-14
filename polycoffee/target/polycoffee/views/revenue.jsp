@@ -1,72 +1,184 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+    <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
-<html>
-<head>
-    <title>Revenue Statistics</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
+        <html>
 
-<body>
+        <head>
+            <title>Revenue Dashboard</title>
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<h2>📊 Thống kê doanh thu</h2>
+            <style>
+                body {
+                    font-family: Arial;
+                }
 
-<form method="post" action="revenue">
+                .container {
+                    display: grid;
+                    grid-template-columns: repeat(3, 1fr);
+                    gap: 20px;
+                }
 
-    <select name="type" onchange="toggleInput(this.value)">
-        <option value="date">Theo ngày</option>
-        <option value="month">Theo tháng</option>
-        <option value="year">Theo năm</option>
-    </select>
+                .card {
+                    padding: 20px;
+                    border-radius: 12px;
+                    box-shadow: 0 0 10px #ccc;
+                    background: #fff;
+                }
 
-    <div id="dateBox">
-        From: <input type="date" name="from">
-        To: <input type="date" name="to">
-    </div>
+                canvas {
+                    max-height: 250px;
+                }
 
-    <div id="monthBox" style="display:none">
-        Year: <input type="number" name="year" value="2025">
-    </div>
+                .summary p {
+                    font-size: 18px;
+                }
+            </style>
+        </head>
 
-    <button type="submit">Thống kê</button>
+        <body>
 
-</form>
+            <h2>📊 Revenue Dashboard</h2>
 
-<hr>
+            <form method="post" action="revenue">
+                From:
+                <input type="date" name="from" value="${from}">
+                To:
+                <input type="date" name="to" value="${to}">
+                <button type="submit">Lọc</button>
+            </form>
 
-<canvas id="chart" width="800" height="400"></canvas>
+            <div class="container">
 
-<script>
-    function toggleInput(type) {
-        document.getElementById("dateBox").style.display = (type === "date") ? "block" : "none";
-        document.getElementById("monthBox").style.display = (type === "month") ? "block" : "none";
-    }
-</script>
+                <!-- SUMMARY -->
+                <div class="card summary">
+                    <h3>💰 Tổng quan</h3>
+                    <c:if test="${not empty summary}">
+                        <p>Hóa đơn: ${summary[0]}</p>
+                        <p>Doanh thu: ${summary[1]}</p>
+                        <p>Trung bình: ${summary[2]}</p>
+                    </c:if>
+                </div>
 
-<c:if test="${not empty data}">
-<script>
-    const labels = [];
-    const values = [];
+                <!-- DATE -->
+                <div class="card">
+                    <h3>📈 Theo ngày</h3>
+                    <canvas id="dateChart"></canvas>
+                </div>
 
-    <c:forEach var="row" items="${data}">
-        labels.push("${row[0]}");
-        values.push(${row[1]});
-    </c:forEach>
+                <!-- TOP -->
+                <div class="card">
+                    <h3>🏆 Top đồ uống</h3>
+                    <canvas id="topChart"></canvas>
+                </div>
 
-    const ctx = document.getElementById('chart');
+                <!-- STAFF -->
+                <div class="card">
+                    <h3>👨‍💼 Nhân viên</h3>
+                    <canvas id="staffChart"></canvas>
+                </div>
 
-    new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: 'Doanh thu',
-                data: values
-            }]
-        }
-    });
-</script>
-</c:if>
+                <!-- CATEGORY -->
+                <div class="card">
+                    <h3>🍹 Theo loại</h3>
+                    <canvas id="categoryChart"></canvas>
+                </div>
 
-</body>
-</html>
+                <!-- HOUR -->
+                <div class="card">
+                    <h3>⏰ Theo giờ</h3>
+                    <canvas id="hourChart"></canvas>
+                </div>
+
+            </div>
+
+            <script>
+                // ================= DATE =================
+                const dateLabels = [];
+                const dateValues = [];
+
+                <c:forEach var="row" items="${dateData}">
+                    dateLabels.push("${row[0]}");
+                    dateValues.push(${row[1]});
+                </c:forEach>
+
+                new Chart(document.getElementById("dateChart"), {
+                    type: "line",
+                    data: {
+                        labels: dateLabels,
+                        datasets: [{ data: dateValues }]
+                    }
+                });
+
+                // ================= TOP =================
+                const topLabels = [];
+                const topValues = [];
+
+                <c:forEach var="row" items="${topData}">
+                    topLabels.push("${row[0]}");
+                    topValues.push(${row[1]});
+                </c:forEach>
+
+                new Chart(document.getElementById("topChart"), {
+                    type: "bar",
+                    data: {
+                        labels: topLabels,
+                        datasets: [{ data: topValues }]
+                    }
+                });
+
+                // ================= STAFF =================
+                const staffLabels = [];
+                const staffValues = [];
+
+                <c:forEach var="row" items="${staffData}">
+                    staffLabels.push("${row[0]}");
+                    staffValues.push(${row[1]});
+                </c:forEach>
+
+                new Chart(document.getElementById("staffChart"), {
+                    type: "bar",
+                    data: {
+                        labels: staffLabels,
+                        datasets: [{ data: staffValues }]
+                    }
+                });
+
+                // ================= CATEGORY =================
+                const cateLabels = [];
+                const cateValues = [];
+
+                <c:forEach var="row" items="${categoryData}">
+                    cateLabels.push("${row[0]}");
+                    cateValues.push(${row[1]});
+                </c:forEach>
+
+                new Chart(document.getElementById("categoryChart"), {
+                    type: "pie",
+                    data: {
+                        labels: cateLabels,
+                        datasets: [{ data: cateValues }]
+                    }
+                });
+
+                // ================= HOUR =================
+                const hourLabels = [];
+                const hourValues = [];
+
+                <c:forEach var="row" items="${hourData}">
+                    hourLabels.push("${row[0]}h");
+                    hourValues.push(${row[1]});
+                </c:forEach>
+
+                new Chart(document.getElementById("hourChart"), {
+                    type: "bar",
+                    data: {
+                        labels: hourLabels,
+                        datasets: [{ data: hourValues }]
+                    }
+                });
+
+            </script>
+
+        </body>
+
+        </html>

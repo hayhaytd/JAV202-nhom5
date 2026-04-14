@@ -8,57 +8,73 @@ import jakarta.servlet.http.*;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 
 @WebServlet("/revenue")
 public class RevenueServlet extends HttpServlet {
 
-    RevenueDAO dao = new RevenueDAO();
+    private RevenueDAO dao = new RevenueDAO();
 
+    private Date parseDate(String dateStr) throws Exception {
+        if (dateStr == null || dateStr.isEmpty()) {
+            return new Date();
+        }
+        return new SimpleDateFormat("yyyy-MM-dd").parse(dateStr);
+    }
+
+    private Date getDefaultFrom(Date to) {
+        return new Date(to.getTime() - 7L * 24 * 60 * 60 * 1000);
+    }
+
+    // ================= LOAD DASHBOARD =================
+    private void loadDashboard(HttpServletRequest req, Date from, Date to) {
+
+        req.setAttribute("summary", dao.getDashboardSummary(from, to));
+
+        req.setAttribute("dateData", dao.getRevenueByDate(from, to));
+        req.setAttribute("topData", dao.getTopDrinks(from, to));
+        req.setAttribute("staffData", dao.getRevenueByStaff(from, to));
+        req.setAttribute("categoryData", dao.getRevenueByCategory(from, to));
+        req.setAttribute("hourData", dao.getRevenueByHour(from, to));
+
+        req.setAttribute("from", new SimpleDateFormat("yyyy-MM-dd").format(from));
+        req.setAttribute("to", new SimpleDateFormat("yyyy-MM-dd").format(to));
+    }
+
+    // ================= GET =================
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        req.setAttribute("view", "/views/revenue.jsp");
-        req.getRequestDispatcher("/views/index.jsp")
-                .forward(req, resp);
-    }
-
-    @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
-
-        String type = req.getParameter("type");
-
-        List<Object[]> data = null;
 
         try {
-            if ("date".equals(type)) {
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            Date to = new Date();
+            Date from = getDefaultFrom(to);
 
-                Date from = sdf.parse(req.getParameter("from"));
-                Date to = sdf.parse(req.getParameter("to"));
-
-                data = dao.getRevenueByDate(from, to);
-
-            } else if ("month".equals(type)) {
-
-                int year = Integer.parseInt(req.getParameter("year"));
-                data = dao.getRevenueByMonth(year);
-
-            } else if ("year".equals(type)) {
-
-                data = dao.getRevenueByYear();
-            }
+            loadDashboard(req, from, to);
 
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        req.setAttribute("data", data);
-        req.setAttribute("type", type);
+        req.setAttribute("view", "/views/revenue.jsp");
+        req.getRequestDispatcher("/views/index.jsp").forward(req, resp);
+    }
+
+    // ================= POST (FILTER DATE) =================
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+
+        try {
+            Date from = parseDate(req.getParameter("from"));
+            Date to = parseDate(req.getParameter("to"));
+
+            loadDashboard(req, from, to);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         req.setAttribute("view", "/views/revenue.jsp");
-        req.getRequestDispatcher("/views/index.jsp")
-                .forward(req, resp);
+        req.getRequestDispatcher("/views/index.jsp").forward(req, resp);
     }
 }
