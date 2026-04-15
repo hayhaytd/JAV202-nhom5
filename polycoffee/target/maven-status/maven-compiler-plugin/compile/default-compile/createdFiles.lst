@@ -6,6 +6,7 @@ com\polycoffee\entity\User.class
 com\polycoffee\servlet\UserServlet.class
 com\polycoffee\servlet\BillServlet.class
 com\polycoffee\filter\AuthFilter.class
+com\polycoffee\servlet\LogoutServlet.class
 com\polycoffee\test\TestSQLConnection.class
 com\polycoffee\mail\Mailer.class
 com\polycoffee\entity\Drink.class
