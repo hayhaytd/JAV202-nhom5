@@ -20,6 +20,7 @@ com\polycoffee\servlet\DrinkServlet.class
 com\polycoffee\entity\BillDetail.class
 com\polycoffee\servlet\RevenueServlet.class
 com\polycoffee\servlet\LoginServlet.class
+com\polycoffee\servlet\SaleServlet.class
 com\polycoffee\filter\Utf8Filter.class
 com\polycoffee\utils\ParamUtil.class
 com\polycoffee\entity\Bill.class

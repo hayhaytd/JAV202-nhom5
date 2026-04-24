@@ -1,97 +1,117 @@
-<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-    <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ page contentType="text/html; charset=UTF-8" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
-        <style>
-            .nav-container {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                background: linear-gradient(90deg, #2c3e50, #34495e);
-                padding: 12px 25px;
-                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-            }
+<style>
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #2c3e50;
+    padding: 12px 20px;
+    color: white;
+}
 
-            .nav-left,
-            .nav-right {
-                display: flex;
-                align-items: center;
-            }
+.nav-left, .nav-right {
+    display: flex;
+    align-items: center;
+}
 
-            .nav-left a,
-            .nav-right a {
-                color: #ecf0f1;
-                text-decoration: none;
-                margin-right: 20px;
-                font-weight: 500;
-                transition: 0.3s;
-                position: relative;
-            }
+.logo {
+    font-weight: bold;
+    color: #f1c40f;
+    margin-right: 20px;
+}
 
-            .nav-left a:hover,
-            .nav-right a:hover {
-                color: #f1c40f;
-            }
+.nav-link {
+    margin-right: 15px;
+    text-decoration: none;
+    color: #ecf0f1;
+    transition: 0.2s;
+}
 
-            /* ACTIVE MENU */
-            .active {
-                color: #f1c40f !important;
-            }
+.nav-link:hover {
+    color: #f1c40f;
+}
 
-            .active::after {
-                content: "";
-                position: absolute;
-                width: 100%;
-                height: 2px;
-                background: #f1c40f;
-                bottom: -4px;
-                left: 0;
-            }
+.active {
+    color: #f1c40f;
+    border-bottom: 2px solid #f1c40f;
+}
 
-            /* LOGO */
-            .logo {
-                font-size: 18px;
-                font-weight: bold;
-                color: #f1c40f;
-                margin-right: 30px;
-            }
-        </style>
+.user {
+    margin-right: 15px;
+    color: #bdc3c7;
+}
+</style>
+<c:set var="user" value="${sessionScope.user}" />
 
-        <nav class="nav-container">
+<nav class="navbar">
 
-            <!-- LEFT MENU -->
-            <div class="nav-left">
+    <!-- LEFT -->
+    <div class="nav-left">
 
-                <div class="logo">☕ PolyCoffee</div>
+        <div class="logo">☕ PolyCoffee</div>
 
-                <a href="home" class="${page == 'home' ? 'active' : ''}">Trang chủ</a>
+        <!-- TRANG CHỦ -->
+        <a href="home" class="nav-link ${page=='home'?'active':''}">
+            🏠 Trang chủ
+        </a>
 
-                <a href="drink" class="${page == 'drink' ? 'active' : ''}">Đồ uống</a>
+        <!-- ================= LOGIN USER ================= -->
+        <c:if test="${not empty user}">
 
-                <a href="bill" class="${page == 'bill' ? 'active' : ''}">Bill</a>
 
-                <a href="revenue" class="${page == 'revenue' ? 'active' : ''}">Thống kê</a>
-
-                <a href="employee" class="${page == 'employee' ? 'active' : ''}">
-                    Nhân viên
+            <!-- HÓA ĐƠN (admin + employee) -->
+            <c:if test="${user.role == 0 || user.role == 1}">
+                <a href="bill" class="nav-link ${page=='bill'?'active':''}">
+                    🧾 Hóa đơn
                 </a>
-            </div>
+            </c:if>
 
-            <!-- RIGHT MENU -->
-            <div class="nav-right">
+            <!-- ADMIN ONLY -->
+            <c:if test="${user.role == 0}">
+                <a href="drink" class="nav-link ${page=='drink'?'active':''}">
+                    🍹 Đồ uống
+                </a>
 
-                <c:choose>
-                    <c:when test="${not empty sessionScope.user}">
-                        <span style="color: #bdc3c7; margin-right: 15px;">
-                            👋 ${sessionScope.user.fullname}
-                        </span>
-                        <a href="logout">Đăng xuất</a>
-                    </c:when>
+                <a href="revenue" class="nav-link ${page=='revenue'?'active':''}">
+                    📊 Thống kê
+                </a>
 
-                    <c:otherwise>
-                        <a href="login">Đăng nhập</a>
-                    </c:otherwise>
-                </c:choose>
+                <a href="employee" class="nav-link ${page=='employee'?'active':''}">
+                    👨‍💼 Nhân viên
+                </a>
+            </c:if>
 
-            </div>
+            <!-- GUEST (role 2) -->
+            <c:if test="${user.role == 2}">
+                <a href="home" class="nav-link">
+                    👀 Xem sản phẩm
+                </a>
+            </c:if>
 
-        </nav>
+        </c:if>
+
+    </div>
+
+    <!-- RIGHT -->
+    <div class="nav-right">
+
+        <c:choose>
+
+            <c:when test="${not empty user}">
+                <span class="user">
+                    👋 ${user.fullname}
+                </span>
+                <a href="logout" class="nav-link">Đăng xuất</a>
+            </c:when>
+
+            <c:otherwise>
+                <a href="login" class="nav-link">Đăng nhập</a>
+            </c:otherwise>
+
+        </c:choose>
+
+    </div>
+
+</nav>
