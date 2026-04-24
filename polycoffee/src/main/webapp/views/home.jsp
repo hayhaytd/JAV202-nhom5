@@ -118,13 +118,14 @@ body {
             <a href="drink" class="btn menu">Xem menu</a>
         </div>
 
-        <!-- ABOUT -->
+        <!-- Order -->
         <div class="card">
-            <div class="icon">📖</div>
-            <h3>Giới thiệu</h3>
-            <p>Tìm hiểu câu chuyện và thương hiệu</p>
-            <a href="home" class="btn about">Xem thêm</a>
+            <div class="icon">🛒</div>
+            <h3>Đặt hàng</h3>
+            <p>Đặt món nhanh</p>
+            <a href="sale?action=create" class="btn about">Đặt hàng</a>
         </div>
+        
 
         <!-- LOGIN -->
         <div class="card">

@@ -10,7 +10,6 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.List;
 
 @WebServlet("/drink")

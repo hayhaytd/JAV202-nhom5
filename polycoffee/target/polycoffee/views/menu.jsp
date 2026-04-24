@@ -85,7 +85,7 @@
 
             <!-- GUEST (role 2) -->
             <c:if test="${user.role == 2}">
-                <a href="home" class="nav-link">
+                <a href="drink" class="nav-link">
                     👀 Xem sản phẩm
                 </a>
             </c:if>

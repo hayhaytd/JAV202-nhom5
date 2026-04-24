@@ -16,6 +16,23 @@
                     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
                 }
 
+                .back-btn {
+                    display: inline-block;
+                    margin-bottom: 20px;
+                    text-decoration: none;
+                    color: white;
+                    background: #3498db;
+                    padding: 8px 14px;
+                    border-radius: 6px;
+                    transition: 0.3s;
+                    border: none;
+                    cursor: pointer;
+                }
+
+                .back-btn:hover {
+                    background: #2980b9;
+                }
+
                 table {
                     width: 100%;
                     border-collapse: collapse;
@@ -59,6 +76,7 @@
             </style>
 
             <h2>🛒 BÁN HÀNG</h2>
+            <a href="bill?action=detail&id=${bill.id}" class="back-btn">⬅ Quay lại</a>
 
             <c:if test="${bill != null}">
 
@@ -146,7 +164,8 @@
                             <c:forEach var="d" items="${drinks}">
                                 <div class="drink-card">
 
-                                    <img src="${pageContext.request.contextPath}/img/imgdrink/${d.image}" alt="Drink Image">
+                                    <img src="${pageContext.request.contextPath}/img/imgdrink/${d.image}"
+                                        alt="Drink Image">
 
                                     <p><b>${d.name}</b></p>
                                     <p>
